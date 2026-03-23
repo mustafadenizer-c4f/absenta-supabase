@@ -5,7 +5,7 @@ import { RootState, AppDispatch } from '../../../store';
 import { fetchHierarchyProfile } from '../../../store/slices/organizationSlice';
 import { supabase } from '../../../config/supabase';
 import { OrganizationService } from '../../../services/organization';
-import { User, UserRole, Group, Department, Team, HierarchyProfile } from '../../../types';
+import { User, UserRole, Group, Department, Team } from '../../../types';
 import Swal from 'sweetalert2';
 import {
   Box,
@@ -40,7 +40,6 @@ import {
   Delete,
   Refresh,
   PersonAdd,
-  Warning,
   LockReset,
 } from '@mui/icons-material';
 
@@ -108,7 +107,7 @@ const Users: React.FC = () => {
     if (currentUser?.company_id) {
       dispatch(fetchHierarchyProfile(currentUser.company_id));
     }
-  }, [currentUser]);
+  }, [currentUser]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load org data based on hierarchy profile
   useEffect(() => {

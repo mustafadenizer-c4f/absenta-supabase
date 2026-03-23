@@ -5,7 +5,6 @@ import { BalanceService } from '../../services/balance';
 import { HolidaysService } from '../../services/holidays';
 import { CollectiveLeaveService, CollectiveLeaveInput } from '../../services/collectiveLeave';
 import { LeaveRequest, EnhancedLeaveBalanceSummary, CollectiveLeave, Holiday } from '../../types';
-import type { RootState } from '../index';
 
 interface LeaveState {
   requests: LeaveRequest[];

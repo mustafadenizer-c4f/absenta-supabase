@@ -1,5 +1,5 @@
 // src/utils/dateUtils.ts
-import { format, parseISO, isValid, differenceInDays, addDays } from 'date-fns';
+import { format, parseISO, isValid, addDays } from 'date-fns';
 import { Holiday } from '../types';
 
 export const formatDate = (date: string | Date, formatStr: string = 'dd/MM/yyyy') => {

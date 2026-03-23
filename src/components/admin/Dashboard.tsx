@@ -26,20 +26,17 @@ import {
   ManageAccounts,
   Person,
   Refresh,
-  Info,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
 
 const AdminDashboard: React.FC = () => {
   const { user: currentUser } = useSelector((state: RootState) => state.auth);
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchUsers = async () => {
     try {

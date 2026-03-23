@@ -31,7 +31,6 @@ import {
   Edit,
   Delete,
   Refresh,
-  ColorLens,
 } from '@mui/icons-material';
 
 interface LeaveType {
@@ -62,7 +61,7 @@ const LeaveTypes: React.FC = () => {
 
   useEffect(() => {
     fetchLeaveTypes();
-  }, [companyId]);
+  }, [companyId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchLeaveTypes = async () => {
     try {

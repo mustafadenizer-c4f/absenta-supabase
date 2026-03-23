@@ -1,16 +1,12 @@
 // src/components/admin/UserGuide.tsx — Full Application Manual
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Typography,
-  Paper,
   List,
   ListItem,
   ListItemText,
-  Card,
-  CardContent,
   Alert,
-  Divider,
   Accordion,
   AccordionSummary,
   AccordionDetails,

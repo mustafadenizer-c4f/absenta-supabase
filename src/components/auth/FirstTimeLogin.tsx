@@ -60,7 +60,6 @@ const FirstTimeLogin: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm<ResetPasswordFormInputs>({
     resolver: yupResolver(schema),
     defaultValues: {

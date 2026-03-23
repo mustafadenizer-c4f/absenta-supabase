@@ -1,6 +1,6 @@
 // src/services/auth.ts
 import { supabase } from '../config/supabase';
-import { User, LoginCredentials, ResetPasswordData } from '../types';
+import { User, LoginCredentials } from '../types';
 
 export class AuthService {
   // Sign in with email and password

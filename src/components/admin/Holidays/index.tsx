@@ -55,7 +55,7 @@ const Holidays: React.FC = () => {
 
   useEffect(() => {
     fetchHolidays();
-  }, [companyId]);
+  }, [companyId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchHolidays = async () => {
     try {

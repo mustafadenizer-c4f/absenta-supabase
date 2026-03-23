@@ -48,7 +48,7 @@ const Reports: React.FC = () => {
 
   useEffect(() => {
     fetchReportData();
-  }, [startDate, endDate]);
+  }, [startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchReportData = async () => {
     try {

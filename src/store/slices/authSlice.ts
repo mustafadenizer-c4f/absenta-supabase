@@ -1,7 +1,7 @@
 // src/store/slices/authSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AuthService } from '../../services/auth';
-import { User, AuthState } from '../../types';
+import { AuthState } from '../../types';
 
 const initialState: AuthState = {
   user: null,

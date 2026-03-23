@@ -57,7 +57,7 @@ const AdminReports: React.FC = () => {
   const { companies, groups, departments } = useSelector((state: RootState) => state.organization);
 
   const [requests, setRequests] = useState<ReportLeaveRequest[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
+  const [, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

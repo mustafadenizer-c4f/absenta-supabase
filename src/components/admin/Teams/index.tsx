@@ -31,7 +31,6 @@ const Teams: React.FC = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [filterDeptId, setFilterDeptId] = useState('');
-  const [filterGroupId, setFilterGroupId] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [editingTeam, setEditingTeam] = useState<Team | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
