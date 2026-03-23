@@ -91,7 +91,7 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={

@@ -2,6 +2,7 @@
   "name": "absenta",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://mustafadenizer-c4f.github.io/absenta-supabase",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
