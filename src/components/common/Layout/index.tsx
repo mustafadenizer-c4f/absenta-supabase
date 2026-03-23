@@ -215,7 +215,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <Toolbar sx={{ gap: 1 }}>
         <Box
           component="img"
-          src="/logos/logo.png"
+          src={`${process.env.PUBLIC_URL}/logos/logo.png`}
           alt="Absenta"
           sx={{ height: 28, borderRadius: '6px' }}
         />
@@ -293,7 +293,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </IconButton>
           <Box
             component="img"
-            src="/logos/logo_white.png"
+            src={`${process.env.PUBLIC_URL}/logos/logo_white.png`}
             alt="Absenta"
             sx={{
               height: 38, mr: 1.5,}}

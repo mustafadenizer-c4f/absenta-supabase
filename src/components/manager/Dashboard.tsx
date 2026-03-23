@@ -83,7 +83,8 @@ const ManagerDashboard: React.FC = () => {
 
       if (teamError) throw teamError;
 
-      const today = new Date().toISOString().split('T')[0];
+      const todayLocal = new Date();
+      const today = `${todayLocal.getFullYear()}-${(todayLocal.getMonth() + 1).toString().padStart(2, '0')}-${todayLocal.getDate().toString().padStart(2, '0')}`;
 
       // Fetch pending approvals count
       const { count: pendingCount, error: pendingError } = await supabase
@@ -114,7 +115,7 @@ const ManagerDashboard: React.FC = () => {
       // Fetch upcoming leaves (next 30 days)
       const futureDate = new Date();
       futureDate.setDate(futureDate.getDate() + 30);
-      const futureDateStr = futureDate.toISOString().split('T')[0];
+      const futureDateStr = `${futureDate.getFullYear()}-${(futureDate.getMonth() + 1).toString().padStart(2, '0')}-${futureDate.getDate().toString().padStart(2, '0')}`;
 
       const { count: upcomingCount, error: upcomingError } = await supabase
         .from('leave_requests')
@@ -173,8 +174,11 @@ const ManagerDashboard: React.FC = () => {
       }
     }
 
-    const rangeStart = weekDays[0].toISOString().split('T')[0];
-    const rangeEnd = weekDays[weekDays.length - 1].toISOString().split('T')[0];
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const toLocalDate = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+    const rangeStart = toLocalDate(weekDays[0]);
+    const rangeEnd = toLocalDate(weekDays[weekDays.length - 1]);
 
     const memberIds = teamMembers.map((m) => m.id);
     if (memberIds.length === 0) {
@@ -192,8 +196,8 @@ const ManagerDashboard: React.FC = () => {
 
     const { data: weekLeaves, error: weekError } = await supabase
       .from('leave_requests')
-      .select('user_id, start_date, end_date, user:user_id(full_name)')
-      .eq('status', 'approved')
+      .select('user_id, start_date, end_date, leave_type_id, user:user_id(full_name), leave_type:leave_type_id(name)')
+      .in('status', ['approved', 'pending'])
       .lte('start_date', rangeEnd)
       .gte('end_date', rangeStart)
       .in('user_id', memberIds);
@@ -203,12 +207,17 @@ const ManagerDashboard: React.FC = () => {
     }
 
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
     const availability: WeekDayAvailability[] = weekDays.map((d) => {
-      const dateStr = d.toISOString().split('T')[0];
+      const dateStr = toLocalDate(d);
       const onLeave = (weekLeaves ?? []).filter(
         (l: any) => l.start_date <= dateStr && l.end_date >= dateStr
       );
-      const names = onLeave.map((l: any) => (l.user as any)?.full_name ?? 'Unknown');
+      const names = onLeave.map((l: any) => {
+        const name = (l.user as any)?.full_name ?? 'Unknown';
+        const leaveType = (l.leave_type as any)?.name;
+        return leaveType ? `${name} (${leaveType})` : name;
+      });
       return {
         date: d,
         label: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
@@ -240,7 +249,8 @@ const ManagerDashboard: React.FC = () => {
     );
   }
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayDate = new Date();
+  const todayStr = `${todayDate.getFullYear()}-${(todayDate.getMonth() + 1).toString().padStart(2, '0')}-${todayDate.getDate().toString().padStart(2, '0')}`;
 
   return (
     <Box>
@@ -385,7 +395,7 @@ const ManagerDashboard: React.FC = () => {
                         align="center"
                         sx={{
                           bgcolor:
-                            day.date.toISOString().split('T')[0] === todayStr
+                            `${day.date.getFullYear()}-${(day.date.getMonth() + 1).toString().padStart(2, '0')}-${day.date.getDate().toString().padStart(2, '0')}` === todayStr
                               ? 'primary.light'
                               : 'transparent',
                           verticalAlign: 'top',

@@ -126,7 +126,7 @@ const Login: React.FC = () => {
             <Box sx={{ textAlign: 'center', mb: 4 }}>
               <Box
                 component="img"
-                src="/logos/logo.png"
+                src={`${process.env.PUBLIC_URL}/logos/logo.png`}
                 alt="Absenta"
                 sx={{ height: 64, mx: 'auto', mb: 2 }}
               />
