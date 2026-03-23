@@ -1,13 +1,110 @@
+/* src/index.css */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Poppins', Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #F4F2FB;
+  color: #2D2B3D;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: 'Fira Code', source-code-pro, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(108, 60, 224, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(108, 60, 224, 0.35);
+}
+
+/* Smooth transitions */
+a, button {
+  transition: all 0.2s ease;
+}
+
+/* react-big-calendar overrides for the theme */
+.rbc-calendar {
+  font-family: 'Poppins', Helvetica, sans-serif !important;
+}
+
+.rbc-toolbar button {
+  border-radius: 8px !important;
+  font-family: 'Poppins', Helvetica, sans-serif !important;
+  font-weight: 500 !important;
+}
+
+.rbc-toolbar button.rbc-active {
+  background: linear-gradient(90deg, #e670fd 0%, #4427df 90%) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+}
+
+.rbc-today {
+  background-color: rgba(108, 60, 224, 0.05) !important;
+}
+
+.rbc-header {
+  font-weight: 600 !important;
+  padding: 8px 4px !important;
+  color: #6C3CE0 !important;
+}
+
+.rbc-event {
+  border-radius: 6px !important;
+}
+
+/* Responsive overrides */
+@media (max-width: 600px) {
+  .rbc-toolbar {
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+  }
+
+  .rbc-toolbar-label {
+    width: 100%;
+    text-align: center;
+    order: -1;
+    font-size: 0.95rem;
+    padding: 4px 0;
+  }
+
+  .rbc-toolbar button {
+    font-size: 0.75rem !important;
+    padding: 4px 8px !important;
+  }
+
+  .rbc-header {
+    font-size: 0.7rem !important;
+    padding: 4px 2px !important;
+  }
+
+  .rbc-event {
+    font-size: 0.65rem !important;
+    padding: 1px 3px !important;
+  }
+
+  .rbc-show-more {
+    font-size: 0.65rem !important;
+  }
 }

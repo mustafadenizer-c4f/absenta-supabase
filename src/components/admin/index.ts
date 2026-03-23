@@ -1,0 +1,12 @@
+export { default as AdminDashboard } from './Dashboard';
+export { default as Users } from './Users';
+export { default as LeaveTypes } from './LeaveTypes';
+export { default as Holidays } from './Holidays';
+export { default as AdminReports } from './Reports';
+export { default as Companies } from './Companies';
+export { default as Groups } from './Groups';
+export { default as Departments } from './Departments';
+export { default as Teams } from './Teams';
+export { default as AdminSettings } from './Settings';
+export { default as AdminApprovals } from './Approvals';
+export { default as AdminTeamCalendar } from './TeamCalendar';
