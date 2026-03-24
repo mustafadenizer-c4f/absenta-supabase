@@ -5,7 +5,10 @@ import { RootState, AppDispatch } from '../../../store';
 import {
   fetchHierarchyProfile,
   updateHierarchyProfile,
+  selectWorkdayConfig,
+  setWorkdayConfig,
 } from '../../../store/slices/organizationSlice';
+import { OrganizationService } from '../../../services/organization';
 import { HierarchyProfile } from '../../../types';
 import {
   Box,
@@ -29,6 +32,16 @@ import {
   Business,
   Groups,
 } from '@mui/icons-material';
+
+const DAY_LABELS: { index: number; label: string }[] = [
+  { index: 1, label: 'Mon' },
+  { index: 2, label: 'Tue' },
+  { index: 3, label: 'Wed' },
+  { index: 4, label: 'Thu' },
+  { index: 5, label: 'Fri' },
+  { index: 6, label: 'Sat' },
+  { index: 0, label: 'Sun' },
+];
 
 const PROFILES: { value: HierarchyProfile; label: string; description: string; icon: React.ReactNode; levels: string }[] = [
   {
@@ -107,6 +120,7 @@ const Settings: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
   const { hierarchyProfile } = useSelector((state: RootState) => state.organization);
+  const workdayConfig = useSelector(selectWorkdayConfig);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false, message: '', severity: 'success',
   });
@@ -114,11 +128,44 @@ const Settings: React.FC = () => {
     open: false, target: null,
   });
 
+  // Workday configuration state
+  const [selectedDays, setSelectedDays] = useState<number[]>(workdayConfig);
+  const [savingWorkdays, setSavingWorkdays] = useState(false);
+
   useEffect(() => {
     if (user?.company_id) {
       dispatch(fetchHierarchyProfile(user.company_id));
     }
   }, [dispatch, user]);
+
+  // Sync local state when Redux workdayConfig changes (e.g., after fetch)
+  useEffect(() => {
+    setSelectedDays(workdayConfig);
+  }, [workdayConfig]);
+
+  const handleToggleDay = (dayIndex: number) => {
+    setSelectedDays((prev) =>
+      prev.includes(dayIndex)
+        ? prev.filter((d) => d !== dayIndex)
+        : [...prev, dayIndex]
+    );
+  };
+
+  const noDaysSelected = selectedDays.length === 0;
+
+  const handleSaveWorkdays = async () => {
+    if (!user?.company_id || noDaysSelected) return;
+    setSavingWorkdays(true);
+    try {
+      await OrganizationService.updateWorkdayConfig(user.company_id, selectedDays);
+      dispatch(setWorkdayConfig(selectedDays));
+      setSnackbar({ open: true, message: 'Workday configuration saved', severity: 'success' });
+    } catch (err: any) {
+      setSnackbar({ open: true, message: err?.message || 'Failed to save workday configuration', severity: 'error' });
+    } finally {
+      setSavingWorkdays(false);
+    }
+  };
 
   const handleSelect = (profile: HierarchyProfile) => {
     if (!user?.company_id || profile === hierarchyProfile) return;
@@ -200,6 +247,43 @@ const Settings: React.FC = () => {
       <Alert severity="info" sx={{ mt: 4 }}>
         You can only upgrade your organization hierarchy. Downgrading is not allowed. Make sure to update the new organizational sections after upgrading.
       </Alert>
+
+      {/* Workday Configuration Section */}
+      <Box sx={{ mt: 6 }}>
+        <Typography variant="h5" sx={{ color: 'primary.main', fontWeight: 600, mb: 1 }}>
+          Workday Configuration
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+          Select which days of the week are workdays for your company.
+        </Typography>
+
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+          {DAY_LABELS.map(({ index, label }) => (
+            <Chip
+              key={index}
+              label={label}
+              color={selectedDays.includes(index) ? 'primary' : 'default'}
+              variant={selectedDays.includes(index) ? 'filled' : 'outlined'}
+              onClick={() => handleToggleDay(index)}
+              sx={{ fontWeight: 500 }}
+            />
+          ))}
+        </Box>
+
+        {noDaysSelected && (
+          <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+            At least one workday is required
+          </Typography>
+        )}
+
+        <Button
+          variant="contained"
+          onClick={handleSaveWorkdays}
+          disabled={noDaysSelected || savingWorkdays}
+        >
+          {savingWorkdays ? 'Saving…' : 'Save Workdays'}
+        </Button>
+      </Box>
 
       <Snackbar
         open={snackbar.open}

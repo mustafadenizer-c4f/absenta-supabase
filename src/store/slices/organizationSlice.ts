@@ -2,7 +2,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { OrganizationService } from '../../services/organization';
 import { SupervisorService } from '../../services/supervisor';
-import { Company, Group, Department, Team, HierarchyProfile } from '../../types';
+import { Company, Group, Department, Team, HierarchyProfile, DEFAULT_WORKDAYS } from '../../types';
+import { RootState } from '../index';
 
 interface OrganizationState {
   companies: Company[];
@@ -10,6 +11,7 @@ interface OrganizationState {
   departments: Department[];
   teams: Team[];
   hierarchyProfile: HierarchyProfile | null;
+  workdayConfig: number[] | null;
   loading: boolean;
   error: string | null;
 }
@@ -20,6 +22,7 @@ const initialState: OrganizationState = {
   departments: [],
   teams: [],
   hierarchyProfile: null,
+  workdayConfig: null,
   loading: false,
   error: null,
 };
@@ -230,7 +233,7 @@ export const fetchHierarchyProfile = createAsyncThunk(
   async (companyId: string, { rejectWithValue }) => {
     try {
       const company = await OrganizationService.getCompanyProfile(companyId);
-      return company.hierarchy_profile;
+      return company;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -257,6 +260,9 @@ const organizationSlice = createSlice({
       state.error = null;
     },
     resetOrganizationState: () => initialState,
+    setWorkdayConfig: (state, action) => {
+      state.workdayConfig = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -474,7 +480,8 @@ const organizationSlice = createSlice({
       })
       // ── fetchHierarchyProfile ──
       .addCase(fetchHierarchyProfile.fulfilled, (state, action) => {
-        state.hierarchyProfile = action.payload;
+        state.hierarchyProfile = action.payload.hierarchy_profile;
+        state.workdayConfig = action.payload.workday_config ?? null;
       })
       // ── updateHierarchyProfile ──
       .addCase(updateHierarchyProfile.fulfilled, (state, action) => {
@@ -483,5 +490,9 @@ const organizationSlice = createSlice({
   },
 });
 
-export const { clearOrganizationError, resetOrganizationState } = organizationSlice.actions;
+export const { clearOrganizationError, resetOrganizationState, setWorkdayConfig } = organizationSlice.actions;
+
+export const selectWorkdayConfig = (state: RootState): number[] =>
+  state.organization.workdayConfig ?? DEFAULT_WORKDAYS;
+
 export default organizationSlice.reducer;

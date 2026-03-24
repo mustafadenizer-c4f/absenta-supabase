@@ -1,6 +1,7 @@
 // src/components/manager/Dashboard.tsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
   Box,
   Typography,
@@ -31,6 +32,7 @@ import { supabase } from '../../config/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { BalanceService } from '../../services/balance';
 import { EnhancedLeaveBalanceSummary } from '../../types';
+import { selectWorkdayConfig } from '../../store/slices/organizationSlice';
 
 interface TeamStats {
   totalMembers: number;
@@ -47,9 +49,12 @@ interface WeekDayAvailability {
   memberNames: string[];
 }
 
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
 const ManagerDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
+  const workdayConfig = useSelector(selectWorkdayConfig);
   const [stats, setStats] = useState<TeamStats>({
     totalMembers: 0,
     onLeaveToday: 0,
@@ -157,19 +162,22 @@ const ManagerDashboard: React.FC = () => {
   const buildWeekAvailability = async (
     teamMembers: { id: string; full_name: string }[]
   ) => {
+    const sortedWorkdays = [...workdayConfig].sort((a, b) => a - b);
+    const workdayCount = sortedWorkdays.length;
+
     const now = new Date();
     const dayOfWeek = now.getDay();
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const monday = new Date(now);
-    monday.setDate(now.getDate() + mondayOffset);
-    monday.setHours(0, 0, 0, 0);
+    // Find the start of the current week (Sunday)
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - dayOfWeek);
+    weekStart.setHours(0, 0, 0, 0);
 
-    // Generate 4 weeks of weekdays (Mon-Fri)
+    // Generate 4 weeks of configured workdays
     const weekDays: Date[] = [];
     for (let week = 0; week < 4; week++) {
-      for (let day = 0; day < 5; day++) {
-        const d = new Date(monday);
-        d.setDate(monday.getDate() + week * 7 + day);
+      for (const wd of sortedWorkdays) {
+        const d = new Date(weekStart);
+        d.setDate(weekStart.getDate() + week * 7 + wd);
         weekDays.push(d);
       }
     }
@@ -186,7 +194,7 @@ const ManagerDashboard: React.FC = () => {
         weekDays.map((d) => ({
           date: d,
           label: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-          dayName: d.toLocaleDateString(undefined, { weekday: 'short' }),
+          dayName: DAY_NAMES[d.getDay()],
           onLeaveCount: 0,
           memberNames: [],
         }))
@@ -206,8 +214,6 @@ const ManagerDashboard: React.FC = () => {
       console.error('Error fetching week leaves:', weekError);
     }
 
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
     const availability: WeekDayAvailability[] = weekDays.map((d) => {
       const dateStr = toLocalDate(d);
       const onLeave = (weekLeaves ?? []).filter(
@@ -221,7 +227,7 @@ const ManagerDashboard: React.FC = () => {
       return {
         date: d,
         label: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-        dayName: dayNames[d.getDay()],
+        dayName: DAY_NAMES[d.getDay()],
         onLeaveCount: onLeave.length,
         memberNames: names,
       };
@@ -372,16 +378,17 @@ const ManagerDashboard: React.FC = () => {
             <TableHead>
               <TableRow>
                 <TableCell sx={{ fontWeight: 600, width: 60 }}>Week</TableCell>
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((day) => (
-                  <TableCell key={day} align="center" sx={{ fontWeight: 600 }}>
-                    {day}
+                {[...workdayConfig].sort((a, b) => a - b).map((dayIdx) => (
+                  <TableCell key={dayIdx} align="center" sx={{ fontWeight: 600 }}>
+                    {DAY_NAMES[dayIdx]}
                   </TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
               {[0, 1, 2, 3].map((weekIdx) => {
-                const weekDays = weekAvailability.slice(weekIdx * 5, weekIdx * 5 + 5);
+                const workdayCount = [...workdayConfig].length;
+                const weekDays = weekAvailability.slice(weekIdx * workdayCount, weekIdx * workdayCount + workdayCount);
                 if (weekDays.length === 0) return null;
                 const weekLabel = weekDays[0]?.label;
                 return (

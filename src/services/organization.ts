@@ -268,4 +268,16 @@ export const OrganizationService = {
     if (error) throw error;
     return data;
   },
+
+  async updateWorkdayConfig(companyId: string, workdayConfig: number[]): Promise<Company> {
+    const { data, error } = await supabase
+      .from('companies')
+      .update({ workday_config: workdayConfig })
+      .eq('id', companyId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
 };

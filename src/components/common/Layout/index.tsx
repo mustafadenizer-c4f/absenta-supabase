@@ -65,12 +65,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState(!isMobile);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  // Fetch hierarchy profile on mount for admin users
+  // Fetch hierarchy profile (and workday config) on mount for all users
   useEffect(() => {
-    if (user?.company_id && user?.role === 'admin') {
+    if (user?.company_id) {
       dispatch(fetchHierarchyProfile(user.company_id));
     }
-  }, [dispatch, user?.company_id, user?.role]);
+  }, [dispatch, user?.company_id]);
 
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);

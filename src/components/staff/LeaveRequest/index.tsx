@@ -21,6 +21,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../../store';
 import { fetchHolidays, createLeaveRequest } from '../../../store/slices/leaveSlice';
+import { selectWorkdayConfig } from '../../../store/slices/organizationSlice';
 import { supabase } from '../../../config/supabase';
 import { LeaveService } from '../../../services/leave';
 import { BalanceService } from '../../../services/balance';
@@ -49,6 +50,7 @@ const LeaveRequest: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
   const { holidays } = useSelector((state: RootState) => state.leave);
+  const workdayConfig = useSelector(selectWorkdayConfig);
 
   const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
   const [colleagues, setColleagues] = useState<User[]>([]);
@@ -155,8 +157,8 @@ const LeaveRequest: React.FC = () => {
     if (isNaN(start.getTime()) || isNaN(end.getTime())) return 0;
     if (start > end) return 0;
     if (watchIsHalfDay) return 0.5;
-    return calculateBusinessDays(start, end, holidays);
-  }, [watchStartDate, watchEndDate, watchIsHalfDay, holidays]);
+    return calculateBusinessDays(start, end, holidays, workdayConfig);
+  }, [watchStartDate, watchEndDate, watchIsHalfDay, holidays, workdayConfig]);
 
   // Check balance warning when leave type or business days change
   useEffect(() => {
@@ -238,7 +240,7 @@ const LeaveRequest: React.FC = () => {
         return;
       }
 
-      const totalDays = data.isHalfDay ? 0.5 : calculateBusinessDays(new Date(data.startDate), new Date(data.endDate), holidays);
+      const totalDays = data.isHalfDay ? 0.5 : calculateBusinessDays(new Date(data.startDate), new Date(data.endDate), holidays, workdayConfig);
 
       const requestData: Record<string, any> = {
         user_id: user.id,

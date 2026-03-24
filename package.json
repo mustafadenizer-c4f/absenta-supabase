@@ -44,6 +44,11 @@
     "eject": "react-scripts eject",
     "deploy": "npm run build && gh-pages -d build"
   },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!(fast-check|pure-rand)/)"
+    ]
+  },
   "eslintConfig": {
     "extends": [
       "react-app",

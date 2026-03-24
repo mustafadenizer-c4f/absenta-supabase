@@ -12,7 +12,10 @@ export interface Company {
   contract_number?: string;
   status: boolean;
   created_at: string;
+  workday_config?: number[]; // 0=Sun, 1=Mon, ..., 6=Sat
 }
+
+export const DEFAULT_WORKDAYS: number[] = [1, 2, 3, 4, 5];
 
 export interface CompanyWithAdmin extends Company {
   admin_user?: {

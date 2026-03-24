@@ -27,6 +27,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import { RootState, AppDispatch } from '../../store';
 import { fetchHolidays, fetchCalendarRequests } from '../../store/slices/leaveSlice';
+import { selectWorkdayConfig } from '../../store/slices/organizationSlice';
 import { CalendarEvent, LeaveRequest, Holiday } from '../../types';
 import ThreeMonthView from '../common/ThreeMonthView';
 
@@ -135,6 +136,7 @@ const CalendarView: React.FC = () => {
   const { requests, holidays, loading, error } = useSelector(
     (state: RootState) => state.leave,
   );
+  const workdayConfig = useSelector(selectWorkdayConfig);
 
   const [view, setView] = useState<View>('month');
   const [date, setDate] = useState<Date>(new Date());
@@ -198,6 +200,21 @@ const CalendarView: React.FC = () => {
       },
     };
   }, []);
+
+  // Style off-days (days not in workdayConfig) with a muted background
+  const dayPropGetter = useCallback(
+    (date: Date) => {
+      if (!workdayConfig.includes(date.getDay())) {
+        return {
+          style: {
+            backgroundColor: '#e1e7fd',
+          },
+        };
+      }
+      return {};
+    },
+    [workdayConfig],
+  );
 
   const handleSelectEvent = useCallback((event: CalendarEvent) => {
     setSelectedEvent(event);
@@ -289,6 +306,7 @@ const CalendarView: React.FC = () => {
             onSelectEvent={handleSelectEvent}
             onRangeChange={handleRangeChange}
             eventPropGetter={eventPropGetter}
+            dayPropGetter={dayPropGetter}
             style={{ height: '100%' }}
             popup
           />
@@ -299,6 +317,7 @@ const CalendarView: React.FC = () => {
           events={events}
           onSelectEvent={handleSelectEvent}
           eventPropGetter={eventPropGetter}
+          dayPropGetter={dayPropGetter}
         />
       )}
 
