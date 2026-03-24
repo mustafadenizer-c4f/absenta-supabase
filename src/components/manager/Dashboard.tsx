@@ -163,7 +163,6 @@ const ManagerDashboard: React.FC = () => {
     teamMembers: { id: string; full_name: string }[]
   ) => {
     const sortedWorkdays = [...workdayConfig].sort((a, b) => a - b);
-    const workdayCount = sortedWorkdays.length;
 
     const now = new Date();
     const dayOfWeek = now.getDay();
